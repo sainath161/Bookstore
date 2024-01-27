@@ -1,55 +1,55 @@
-import React,{useState} from 'react'
-import axios from 'axios'
+import React from "react";
+import "../Style/Books.css";
 
+const Books = ({ booksDetail, setBookClicked }) => {
+  console.log(booksDetail);
+  //   booksDetail
+  //     .then((res) => console.log(res.items))
+  //     .catch((err) => console.log(err));
+  return (
+    <div className="books">
+      {booksDetail.map((book, index) => {
+        if (index > 2) return null;
 
-const Books=({setBookInfo,bookinfo})=>{
-    
-    const [query, setQuery] = useState('');
-  const [books, setBooks] = useState([]);
-    
-    
-    async function fectchDetails(){
-        try{
-            const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}`);
-           
-        console.log(response.data.items)
-        setBooks(response.data.items)
-
+        if (
+          !book.volumeInfo ||
+          !book.volumeInfo.imageLinks ||
+          !book.volumeInfo.imageLinks.thumbnail ||
+          !book.volumeInfo.title ||
+          !book.searchInfo ||
+          !book.searchInfo.textSnippet ||
+          !book.volumeInfo.previewLink
+        ) {
+          return null;
         }
-        catch(e){
-            console.log(e.message)
-        }
-        
-    }
-    return(
-        <div>
-            <div className='inputdata'>
-                <input type='text' onChange={(e)=>setQuery(e.target.value)} placeholder='Search for the book you want to read it now Sherlock Holmes,Harry potter...'/>            
-                <button onClick={fectchDetails}>Search</button>
-                
+
+        return (
+          <div className="book" key={index}>
+            <div className="book-background">
+              <div className="books-img">
+                <img
+                  src={book.volumeInfo.imageLinks.thumbnail}
+                  alt={`Thumbnail for ${book.title}`}
+                />
+              </div>
+              <div className="book-info">
+                <h3 className="book-title">{book.volumeInfo.title}</h3>
+                <p className="book-desc">{book.searchInfo.textSnippet}</p>
+                <button
+                  className="readmore"
+                  onClick={() => {
+                    setBookClicked(book.id);
+                  }}
+                >
+                  Now Read!
+                </button>
+              </div>
             </div>
-        <div>
-            
-        {books.map((book) => (
-          <div key={book.id} className='books'>
-
-            
-            <img src={book.volumeInfo.imageLinks?.smallThumbnail} alt={book.volumeInfo.title} onClick={()=>setBookInfo(...bookinfo,book)} />
           </div>
-        ))}
-      
-    
+        );
+      })}
+    </div>
+  );
+};
 
-
-
-
-
-            </div>
-           
-
-
-        </div>
-    )
-}
-
-export default Books
+export default Books;
